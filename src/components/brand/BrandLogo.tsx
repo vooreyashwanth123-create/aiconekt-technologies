@@ -58,13 +58,15 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const isMonochromeWhite = variant === 'monochrome-white';
   const isMonochrome = isMonochromeDark || isMonochromeWhite;
 
+  const baseUrl = import.meta.env.BASE_URL;
+
   // Render the exact orange-to-red orbital A emblem
   const renderEmblem = () => (
     <div className={`relative flex items-center justify-center shrink-0 ${emblemSizes[size]}`}>
       {/* Official High-Resolution Transparent Emblem Image */}
       {!isMonochrome ? (
         <img
-          src="/brand/aiconekt-emblem-transparent.png"
+          src={`${baseUrl}brand/aiconekt-emblem-transparent.png`}
           alt="AICONEKT Orbital A Emblem"
           className="w-full h-full object-contain select-none drop-shadow-[0_0_12px_rgba(255,100,0,0.35)] transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
@@ -178,12 +180,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         onClick={onClick}
       >
         <img
-          src="/brand/aiconekt-logo-transparent.png"
+          src={`${baseUrl}brand/aiconekt-logo-transparent.png`}
           alt="AICONEKT TECHNOLOGIES Official Master Logo"
           className={`${artworkSizes[size]} object-contain select-none drop-shadow-[0_0_24px_rgba(255,80,0,0.25)]`}
           onError={(e) => {
             // If transparent PNG fails, load master JPG directly
-            (e.target as HTMLImageElement).src = '/brand/aiconekt-official-logo.jpg';
+            (e.target as HTMLImageElement).src = `${baseUrl}brand/aiconekt-official-logo.jpg`;
           }}
         />
       </div>

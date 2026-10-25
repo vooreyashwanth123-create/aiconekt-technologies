@@ -40,10 +40,31 @@ export const App: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // URL Path Synchronization
+  // URL Path Synchronization (Base-aware for GitHub Pages & Local Dev)
+  const getBasePath = () => {
+    const rawBase = import.meta.env.BASE_URL || '/';
+    return rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+  };
+
+  const getNormalizedPath = (pathname: string) => {
+    const base = getBasePath().toLowerCase();
+    let path = pathname.toLowerCase();
+    if (base && path.startsWith(base)) {
+      path = path.slice(base.length);
+    }
+    if (!path.startsWith('/')) {
+      path = '/' + path;
+    }
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    return path;
+  };
+
   useEffect(() => {
     const pathToTabMap: Record<string, string> = {
       '/': 'home',
+      '/home': 'home',
       '/projects': 'projects',
       '/innovation': 'projects',
       '/events': 'events',
@@ -58,15 +79,15 @@ export const App: React.FC = () => {
       '/connect': 'contact',
     };
 
-    const pathname = window.location.pathname.toLowerCase();
-    if (pathToTabMap[pathname]) {
-      setCurrentTab(pathToTabMap[pathname]);
+    const initialNormalized = getNormalizedPath(window.location.pathname);
+    if (pathToTabMap[initialNormalized]) {
+      setCurrentTab(pathToTabMap[initialNormalized]);
     }
 
     const handlePopState = () => {
-      const currentPath = window.location.pathname.toLowerCase();
-      if (pathToTabMap[currentPath]) {
-        setCurrentTab(pathToTabMap[currentPath]);
+      const currentNormalized = getNormalizedPath(window.location.pathname);
+      if (pathToTabMap[currentNormalized]) {
+        setCurrentTab(pathToTabMap[currentNormalized]);
       } else {
         setCurrentTab('home');
       }
@@ -78,8 +99,10 @@ export const App: React.FC = () => {
 
   const handleSelectTab = (tab: string) => {
     setCurrentTab(tab);
-    const targetPath = tab === 'home' ? '/' : `/${tab}`;
-    if (window.location.pathname !== targetPath) {
+    const base = getBasePath();
+    const subPath = tab === 'home' ? '' : `/${tab}`;
+    const targetPath = `${base}${subPath}` || '/';
+    if (window.location.pathname.toLowerCase() !== targetPath.toLowerCase()) {
       window.history.pushState(null, '', targetPath);
     }
   };
